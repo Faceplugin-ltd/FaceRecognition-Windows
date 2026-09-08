@@ -1,0 +1,4 @@
+# Local Gradio test UI only (API must already be running via run.bat).
+-r requirements.txt
+requests>=2.31.0
+gradio>=4.0
