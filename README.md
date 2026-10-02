@@ -9,7 +9,7 @@
 
 # FacePlugin Face Recognition SDK — Windows (Fully On-Premise)
 
-> **Ready in ~10 minutes (after Drive download):** put runtime under `lib\cpu\` → `run.bat` → copy `FPMC1.…` → `curl /api/health`.  
+> **Ready in ~10 minutes (after Drive download):** put runtime under `lib\cpu\` → `run.bat` → copy machine code → `curl /api/health`.  
 > Jump: [Quick Start](#quick-start) · [Start the API](#start-the-api) · [SDK License](#sdk-license) · [Setup on your own app](#setup-on-your-own-app) · [Try it](#try-it)
 
 ## Quick Start
@@ -17,7 +17,7 @@
 - [ ] Clone [FaceRecognition-Windows](https://github.com/Faceplugin-ltd/FaceRecognition-Windows)
 - [ ] Download the CPU runtime into `lib\cpu\` — [Get the runtime](#get-the-runtime)
 - [ ] `pip install -r requirements.txt` then `run.bat` — API on **8083**
-- [ ] Copy machine code `FPMC1.…` from the terminal (or `GET /api/machinecode`)
+- [ ] Copy machine code machine code from the terminal (or `GET /api/machinecode`)
 - [ ] [Contact us](#contact) to obtain a license key → enter it at the prompt or use `POST /api/activate`
 - [ ] Try Postman, curl, or Gradio on **9003** (`run_demo.bat` — local only)
 
@@ -71,7 +71,7 @@ Test with Postman, curl, or the local Gradio demo (`demo.py`). Docs: [https://do
 |------|----------------|
 | 1 | Windows 10/11 **x64**, Python 3.10+ |
 | 2 | Runtime libraries in `.\lib\cpu\` — see [Get the runtime](#get-the-runtime) |
-| 3 | Start **without** a license. Copy `FPMC1.…` from the log or `GET /api/machinecode`, send it to FacePlugin ([contact](#contact)), then activate with your license key |
+| 3 | Start **without** a license. Copy machine code from the log or `GET /api/machinecode`, send it to FacePlugin ([contact](#contact)), then activate with your license key |
 
 You do **not** need a license to start the API once. Product endpoints unlock after you activate.
 
@@ -137,10 +137,10 @@ run.bat
 
 API: **http://127.0.0.1:8083**
 
-The API starts even if activation fails. Copy the **machine code** (`FPMC1.…`) from the log and send it to FacePlugin.
+The API starts even if activation fails. Copy the **machine code** (machine code) from the log and send it to FacePlugin.
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/Faceplugin-ltd/faceplugin-assets/main/screenshots/face-recognition/windows/api-start.png" alt="run.bat: copy machine code (FPMC1), paste license key, SDK ready on port 8083" width="900"/>
+ <img src="https://raw.githubusercontent.com/Faceplugin-ltd/faceplugin-assets/main/screenshots/face-recognition/windows/api-start.png" alt="run.bat: copy machine code, paste license key, SDK ready on port 8083" width="900"/>
 </p>
 
 ## SDK License
@@ -150,7 +150,7 @@ Licenses are **offline** and bound to your machine. Offline cryptography is pre-
 ### How to get a license
 
 1. **Start the server** ([above](#start-the-api)). A license is not required for the first start.
-2. **Copy the machine code** from the terminal. It looks like **`FPMC1.…`**.
+2. **Copy the machine code** from the terminal. Copy it from the logs or `GET /api/machinecode`.
 3. **Send that machine code** to FacePlugin ([contact](#contact)). We will issue a license key for that code.
 4. **Activate** with the license key:
 
@@ -269,7 +269,7 @@ First, obtain the machine code for activation and request a license based on the
 import sdk
 
 machine_code = sdk.get_machine_code()
-print("machineCode:", machine_code)  # FPMC1.…
+print("machineCode:", machine_code)  # machine code
 ```
 
 #### Step Two
