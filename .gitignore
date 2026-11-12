@@ -1,0 +1,39 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Runtime (download from Google Drive into lib/cpu)
+lib/cpu/*
+!lib/cpu/.gitkeep
+lib/gpu/*
+!lib/gpu/.gitkeep
+!lib/**/README.md
+lib/**/*.dll
+lib/**/*.fpk
+lib/**/*.so
+lib/**/*.dylib
+lib/**/*.lib
+lib/**/*.exp
+lib/**/*.pdb
+*.fpk
+onnxruntime*
+
+# Local license / activation
+activation.dat
+license.txt.example
+license.dat
+FP1.*
+*.fp1
+
+# Kit-only (org workspace; not for customer GitHub)
+upload-library.py
+upload_library.py
+lib_drive.yaml
+deploy.py
+
+# IDE / junk
+.idea/
+.vscode/
+*.iml
