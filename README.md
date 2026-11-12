@@ -116,7 +116,7 @@ You do **not** need a license to start the API once. Product endpoints unlock af
 
 `.\lib\cpu\` is empty on GitHub because native binaries and model files are too large. Face Recognition Windows is **CPU-only** — there is no `gpu\` package.
 
-**[FaceRecognition-Windows runtime (Google Drive)](https://drive.google.com/drive/folders/1twWrWO-F4lEnyMxBt-UtLTsQToqsQ-Xd?usp=sharing)**
+**[FaceRecognition-Windows runtime (Google Drive)](https://drive.google.com/drive/folders/1kwGZ1TYO3VtwSI2xkRH9p0HtnbRfknyU?usp=sharing)**
 
 1. Clone the repo (if you have not already):
 

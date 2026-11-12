@@ -13,7 +13,7 @@ goto :ready
 echo ERROR: .\lib\cpu\ is empty.
 echo.
 echo Download all files from Google Drive into .\lib\cpu\:
-echo   https://drive.google.com/drive/folders/1twWrWO-F4lEnyMxBt-UtLTsQToqsQ-Xd?usp=sharing
+echo   https://drive.google.com/drive/folders/1kwGZ1TYO3VtwSI2xkRH9p0HtnbRfknyU?usp=sharing
 echo.
 echo Need:
 echo   .\lib\cpu\FaceRecognitionSDK.dll
