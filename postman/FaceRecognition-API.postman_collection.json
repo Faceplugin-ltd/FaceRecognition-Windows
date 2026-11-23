@@ -1,0 +1,588 @@
+{
+  "info": {
+    "_postman_id": "faceplugin-facerecognition-docker-0001",
+    "name": "FaceRecognition API",
+    "description": "FacePlugin Face Recognition API (Face-Recognition-Windows).\nbaseUrl defaults to port 8092.\nRoutes are /api/v1/*; the older /api/* paths still work.\nInteractive docs: {{baseUrl}}/docs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8092"
+    },
+    {
+      "key": "imageB64",
+      "value": ""
+    },
+    {
+      "key": "image2B64",
+      "value": ""
+    },
+    {
+      "key": "feature1",
+      "value": ""
+    },
+    {
+      "key": "feature2",
+      "value": ""
+    },
+    {
+      "key": "personId",
+      "value": "1"
+    },
+    {
+      "key": "faceId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "API docs (Swagger)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/docs",
+        "header": []
+      }
+    },
+    {
+      "name": "Shared",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/health",
+            "header": []
+          }
+        },
+        {
+          "name": "Version",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/backend",
+            "header": []
+          }
+        },
+        {
+          "name": "Machine code",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/machinecode",
+            "header": []
+          }
+        },
+        {
+          "name": "License status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/licenseStatus",
+            "header": []
+          }
+        },
+        {
+          "name": "Activate (FP1. text)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "FP1.PASTE_YOUR_LICENSE_KEY_HERE"
+            },
+            "url": "{{baseUrl}}/api/activate",
+            "description": "Preferred: paste the FP1. key from FacePlugin (same content as license.txt)."
+          }
+        },
+        {
+          "name": "Activate (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"license\": \"FP1.PASTE_YOUR_LICENSE_KEY_HERE\"\n}"
+            },
+            "url": "{{baseUrl}}/api/activate"
+          }
+        },
+        {
+          "name": "Activate (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "license",
+                  "type": "text",
+                  "value": "FP1.PASTE_YOUR_LICENSE_KEY_HERE"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/activate",
+            "description": "form-data license text, or a file part named license."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Face recognition",
+      "item": [
+        {
+          "name": "Face detection (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"{{imageB64}}\",\n  \"cropImage\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/detect"
+          }
+        },
+        {
+          "name": "Face detection (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                },
+                {
+                  "key": "cropImage",
+                  "type": "text",
+                  "value": "false"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/detect",
+            "description": "multipart/form-data file upload; same path as JSON."
+          }
+        },
+        {
+          "name": "Quality assessment (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"{{imageB64}}\",\n  \"cropImage\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/quality"
+          }
+        },
+        {
+          "name": "Quality assessment (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                },
+                {
+                  "key": "cropImage",
+                  "type": "text",
+                  "value": "false"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/quality",
+            "description": "multipart/form-data file upload; same path as JSON."
+          }
+        },
+        {
+          "name": "Extract template (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"{{imageB64}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/feature"
+          }
+        },
+        {
+          "name": "Extract template (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/feature",
+            "description": "multipart/form-data file upload; same path as JSON."
+          }
+        },
+        {
+          "name": "1:1 verification (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image1\": \"{{imageB64}}\",\n  \"image2\": \"{{image2B64}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/match"
+          }
+        },
+        {
+          "name": "1:1 verification (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image1",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                },
+                {
+                  "key": "image2",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                },
+                {
+                  "key": "cropImage",
+                  "type": "text",
+                  "value": "false"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/match",
+            "description": "multipart/form-data file upload; same path as JSON."
+          }
+        },
+        {
+          "name": "Compare templates (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feature1\": \"{{feature1}}\",\n  \"feature2\": \"{{feature2}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/similarity"
+          }
+        },
+        {
+          "name": "Compare templates (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "feature1",
+                  "type": "text",
+                  "value": "{{feature1}}"
+                },
+                {
+                  "key": "feature2",
+                  "type": "text",
+                  "value": "{{feature2}}"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/similarity",
+            "description": "Same fields as JSON. feature1 and feature2 are text, not files."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1:N identification",
+      "item": [
+        {
+          "name": "1:N identification (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/identify",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"{{imageB64}}\",\n  \"top_k\": 5\n}"
+            },
+            "description": "Per face: status identified | no_match | spoof, best, candidates, liveness. Quality is not part of identification."
+          }
+        },
+        {
+          "name": "1:N identification (form-data file)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/identify",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "top_k",
+                  "value": "5",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Find possible duplicates",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/similar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limit\": 100\n}"
+            }
+          }
+        },
+        {
+          "name": "Get settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/settings"
+          }
+        },
+        {
+          "name": "Change settings",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/settings",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threshold\": 0.81,\n  \"duplicate_check\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gallery",
+      "item": [
+        {
+          "name": "Enroll a face (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/persons",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"{{imageB64}}\",\n  \"name\": \"Anna Lee\",\n  \"note\": \"\",\n  \"merge_by_name\": true,\n  \"on_duplicate\": \"reject\"\n}"
+            },
+            "description": "One person per photo. -6 more than one face, -7 duplicate (409, data.duplicate), -8 low quality (422, data.quality.reasons)."
+          }
+        },
+        {
+          "name": "Enroll a face (form-data file)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/persons",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "name",
+                  "value": "Anna Lee",
+                  "type": "text"
+                },
+                {
+                  "key": "merge_by_name",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add photo to person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/persons",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"{{image2B64}}\",\n  \"person_id\": \"{{personId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List persons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/persons?page=1&page_size=25&q=&thumbs=false"
+          }
+        },
+        {
+          "name": "Get person",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/persons/{{personId}}?thumbs=false"
+          }
+        },
+        {
+          "name": "Rename person",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/persons/{{personId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Anna Lee\",\n  \"note\": \"Front desk\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete person",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/persons/{{personId}}"
+          }
+        },
+        {
+          "name": "Delete one photo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/faces/{{faceId}}"
+          }
+        },
+        {
+          "name": "Face image (crop)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/faces/{{faceId}}/image?kind=crop"
+          }
+        },
+        {
+          "name": "Import server folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/persons/import",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directory\": \"people\",\n  \"name_from\": \"folder\",\n  \"on_duplicate\": \"reject\"\n}"
+            },
+            "description": "Needs FACESDK_IMPORT_ROOT on the server. Paths are relative to it."
+          }
+        },
+        {
+          "name": "Delete all persons",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/persons?confirm=true"
+          }
+        }
+      ]
+    }
+  ]
+}

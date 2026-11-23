@@ -1,0 +1,8 @@
+# After FacePlugin sends your key (bound to THIS environment's machine code):
+#   1. Replace the line below with your real FP1.… key (one line).
+#   2. Restart (run.bat) OR:
+#        curl -X POST http://127.0.0.1:8096/api/activate --data-binary @license.txt
+#
+# You get the machine code first: start without a key → GET /api/machinecode → contact FacePlugin.
+# Do not use this placeholder as a license — it is ignored on purpose.
+FP1.PASTE_YOUR_LICENSE_KEY_HERE

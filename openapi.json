@@ -1,0 +1,1226 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FacePlugin Face Recognition API",
+    "version": "1.0.0",
+    "description": "On-premise face recognition: face detection, quality assessment, 1:1 verification and 1:N identification against a local enrollment gallery.\n\nAll routes are also served without the /v1 segment for older clients.\n\nResponses use the envelope {success, code, message, data}, except detect, quality, match, feature and similarity, which return the SDK JSON unchanged.\n\nError codes: -1 bad input, -2 no face, -4 import not allowed, -5 too large, -6 multiple faces, -7 duplicate, -8 low quality, -10 not found, -19 server error."
+  },
+  "tags": [
+    {
+      "name": "System"
+    },
+    {
+      "name": "Analysis"
+    },
+    {
+      "name": "Verification"
+    },
+    {
+      "name": "Identification"
+    },
+    {
+      "name": "Gallery"
+    },
+    {
+      "name": "Settings"
+    }
+  ],
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/v1/backend": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Product, versions and runtime backend",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/v1/machinecode": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Machine code for licensing",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/v1/licenseStatus": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "License status",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/v1/activate": {
+      "post": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Activate a license",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "Send the FP1 key as text/plain, as JSON {license: FP1...}, or as a form-data file named license.",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "license": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/detect": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "summary": "Face detection and attributes",
+        "responses": {
+          "200": {
+            "description": "Faces with pose, region and attributes (SDK JSON, no envelope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Base64 image (data URI accepted)"
+                  },
+                  "cropImage": {
+                    "type": "boolean",
+                    "description": "Return face crops"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "cropImage": {
+                    "type": "boolean",
+                    "description": "Return face crops"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quality": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "summary": "Face quality assessment",
+        "responses": {
+          "200": {
+            "description": "Quality attributes per face (SDK JSON, no envelope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Base64 image (data URI accepted)"
+                  },
+                  "cropImage": {
+                    "type": "boolean",
+                    "description": "Return face crops"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "cropImage": {
+                    "type": "boolean",
+                    "description": "Return face crops"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/match": {
+      "post": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "1:1 verification",
+        "responses": {
+          "200": {
+            "description": "Similarity per face pair (SDK JSON, no envelope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "Compares every face in image1 with every face in image2 and returns a similarity score per face pair.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image1",
+                  "image2"
+                ],
+                "properties": {
+                  "image1": {
+                    "type": "string",
+                    "description": "Base64 image"
+                  },
+                  "image2": {
+                    "type": "string",
+                    "description": "Base64 image"
+                  },
+                  "cropImage": {
+                    "type": "boolean",
+                    "description": "Return face crops"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image1",
+                  "image2"
+                ],
+                "properties": {
+                  "image1": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "image2": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "cropImage": {
+                    "type": "boolean",
+                    "description": "Return face crops"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feature": {
+      "post": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Extract biometric templates",
+        "responses": {
+          "200": {
+            "description": "A template (feature) per face (SDK JSON, no envelope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Base64 image (data URI accepted)"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/similarity": {
+      "post": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Compare two biometric templates",
+        "responses": {
+          "200": {
+            "description": "Similarity 0..1 (SDK JSON, no envelope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "feature1",
+                  "feature2"
+                ],
+                "properties": {
+                  "feature1": {
+                    "type": "string",
+                    "description": "Template from /feature"
+                  },
+                  "feature2": {
+                    "type": "string",
+                    "description": "Template from /feature"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Read gallery settings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Change gallery settings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [],
+                "properties": {
+                  "threshold": {
+                    "type": "number",
+                    "description": "Match threshold 0..1",
+                    "example": 0.81
+                  },
+                  "duplicate_check": {
+                    "type": "boolean",
+                    "description": "Reject a face that already looks like another person"
+                  },
+                  "liveness_check": {
+                    "type": "boolean",
+                    "description": "Check liveness before identification (Plus edition)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/persons": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "List persons (paged)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "maximum": 100
+            },
+            "description": "Persons per page"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search name, note or ID"
+          },
+          {
+            "name": "thumbs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Include a base64 face crop per person"
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Enroll a face (create or extend a person)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "Adds one face to the gallery. The photo must show exactly one person.\n\nThe duplicate check runs first (see settings). Set check_quality=true to also reject poor photos (slower). Errors: -2 no face, -6 multiple faces, -7 duplicate (409, data.duplicate), -8 low quality (422, data.quality.reasons).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Base64 image (data URI accepted)"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Person name"
+                  },
+                  "note": {
+                    "type": "string",
+                    "description": "Free text"
+                  },
+                  "person_id": {
+                    "type": "integer",
+                    "description": "Add this photo to an existing person"
+                  },
+                  "merge_by_name": {
+                    "type": "boolean",
+                    "description": "Add to the existing person with the same name"
+                  },
+                  "on_duplicate": {
+                    "type": "string",
+                    "description": "When the face looks like another person",
+                    "enum": [
+                      "reject",
+                      "add",
+                      "new"
+                    ],
+                    "default": "reject"
+                  },
+                  "check_quality": {
+                    "type": "boolean",
+                    "description": "Also run the quality assessment and reject poor photos (default false, slower)"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "Where the photo came from, e.g. a file name"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Person name"
+                  },
+                  "note": {
+                    "type": "string",
+                    "description": "Free text"
+                  },
+                  "person_id": {
+                    "type": "integer",
+                    "description": "Add this photo to an existing person"
+                  },
+                  "merge_by_name": {
+                    "type": "boolean",
+                    "description": "Add to the existing person with the same name"
+                  },
+                  "on_duplicate": {
+                    "type": "string",
+                    "description": "When the face looks like another person",
+                    "enum": [
+                      "reject",
+                      "add",
+                      "new"
+                    ],
+                    "default": "reject"
+                  },
+                  "check_quality": {
+                    "type": "boolean",
+                    "description": "Also run the quality assessment and reject poor photos (default false, slower)"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "Where the photo came from, e.g. a file name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Delete every person and photo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "confirm",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Must be true"
+          }
+        ]
+      }
+    },
+    "/api/v1/persons/{person_id}": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Get a person and their photos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "thumbs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Include base64 face crops"
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Rename a person or change the note",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "New name"
+                  },
+                  "note": {
+                    "type": "string",
+                    "description": "New note"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Delete a person and their photos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/persons/import": {
+      "post": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Import photos from a server folder",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "Disabled unless the server sets FACESDK_IMPORT_ROOT. Paths are relative to that folder.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [],
+                "properties": {
+                  "directory": {
+                    "type": "string",
+                    "description": "Folder to import, searched at any depth"
+                  },
+                  "paths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Individual files instead of a folder"
+                  },
+                  "name_from": {
+                    "type": "string",
+                    "description": "Name each person after the file or its folder",
+                    "enum": [
+                      "file",
+                      "folder"
+                    ],
+                    "default": "file"
+                  },
+                  "on_duplicate": {
+                    "type": "string",
+                    "description": "See POST /persons",
+                    "enum": [
+                      "reject",
+                      "add",
+                      "new"
+                    ],
+                    "default": "reject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/faces/{face_id}": {
+      "delete": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Delete one photo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "A person left with no photos is deleted too.",
+        "parameters": [
+          {
+            "name": "face_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/faces/{face_id}/image": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Face image (JPEG)",
+        "responses": {
+          "200": {
+            "description": "JPEG image",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "face_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "crop",
+                "full"
+              ],
+              "default": "crop"
+            },
+            "description": "Face crop or original photo"
+          }
+        ]
+      }
+    },
+    "/api/v1/identify": {
+      "post": {
+        "tags": [
+          "Identification"
+        ],
+        "summary": "1:N identification",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "Each face in the photo gets a status (identified, no_match, or spoof when liveness fails) and its top candidates, ranked by each person's best-matching photo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Base64 image (data URI accepted)"
+                  },
+                  "threshold": {
+                    "type": "number",
+                    "description": "Override the match threshold"
+                  },
+                  "top_k": {
+                    "type": "integer",
+                    "description": "Candidates per face",
+                    "default": 5,
+                    "maximum": 100
+                  },
+                  "liveness": {
+                    "type": "boolean",
+                    "description": "Override the liveness_check setting"
+                  },
+                  "quality": {
+                    "type": "boolean",
+                    "description": "Report probe image quality (default false). Identification does not use it."
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "threshold": {
+                    "type": "number",
+                    "description": "Override the match threshold"
+                  },
+                  "top_k": {
+                    "type": "integer",
+                    "description": "Candidates per face",
+                    "default": 5,
+                    "maximum": 100
+                  },
+                  "liveness": {
+                    "type": "boolean",
+                    "description": "Override the liveness_check setting"
+                  },
+                  "quality": {
+                    "type": "boolean",
+                    "description": "Report probe image quality (default false). Identification does not use it."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/similar": {
+      "post": {
+        "tags": [
+          "Identification"
+        ],
+        "summary": "Find possible duplicate persons",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "description": "Pairs of different persons whose photos match above the threshold.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "threshold": {
+                    "type": "number",
+                    "description": "Override the threshold"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Most pairs returned",
+                    "default": 100
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Envelope": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {}
+        }
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error envelope",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      }
+    }
+  }
+}
