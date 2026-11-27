@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 .DS_Store
 
-# Runtime (download from Google Drive into lib/cpu)
+# Runtime (download from GitHub Releases into lib/cpu)
 lib/cpu/*
 !lib/cpu/.gitkeep
 lib/gpu/*
@@ -44,3 +44,12 @@ deploy.py
 # License key for this machine (never publish). The .example file ships.
 license.txt
 !license.txt.example
+
+# Extra caches
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/

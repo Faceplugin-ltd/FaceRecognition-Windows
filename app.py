@@ -85,6 +85,27 @@ def sdk_json(result):
     return Response(raw, mimetype="application/json")
 
 
+def activate_checked(license_path: str) -> int:
+    """Activate and require the recognition feature bit (rejects wrong-tier keys)."""
+    res = sdk.activate(license_path)
+    if res != 0:
+        return res
+    if not sdk.get_license_status().get("recognition"):
+        return -1
+    return 0
+
+
+def require_recognition() -> None:
+    """Raise if the loaded license lacks recognition."""
+    status = sdk.get_license_status()
+    if not status.get("recognition"):
+        raise ApiError(
+            -1,
+            "Invalid license",
+            data={"activated": bool(status.get("licensed")), "license": status},
+        )
+
+
 # ---------------------------------------------------------------- CORS
 
 
@@ -204,11 +225,23 @@ def activate():
     if not raw:
         raise ApiError(-1, "Empty license")
     path = license_ux.save_license(ROOT, raw)
-    res = sdk.activate(str(path))
+    res = activate_checked(str(path))
     mc = sdk.get_machine_code()
+    status = sdk.get_license_status()
     if res != 0:
-        return envelope(False, -1, "Invalid license", {"activated": False, "machinecode": mc})
-    sdk.init_sdk()
+        return envelope(
+            False,
+            -1,
+            "Invalid license",
+            {"activated": False, "machinecode": mc, "license": status},
+        )
+    if sdk.init_sdk() != 0:
+        return envelope(
+            False,
+            -1,
+            "Invalid license",
+            {"activated": False, "machinecode": mc, "license": status},
+        )
     return ok({"activated": True, "machinecode": mc}, "Activated")
 
 
@@ -218,18 +251,21 @@ def activate():
 
 @route("/detect", ["POST"])
 def detect():
+    require_recognition()
     data = http_body.parse_body()
     return sdk_json(sdk.detect(_image(data), http_body.crop_flag(data)))
 
 
 @route("/quality", ["POST"])
 def quality():
+    require_recognition()
     data = http_body.parse_body()
     return sdk_json(sdk.quality(_image(data), http_body.crop_flag(data)))
 
 
 @route("/match", ["POST"])
 def match():
+    require_recognition()
     data = http_body.parse_body()
     if not data.get("image1") or not data.get("image2"):
         raise ApiError(-1, "image1 and image2 are required")
@@ -238,11 +274,13 @@ def match():
 
 @route("/feature", ["POST"])
 def feature():
+    require_recognition()
     return sdk_json(sdk.feature(_image(http_body.parse_body())))
 
 
 @route("/similarity", ["POST"])
 def similarity():
+    require_recognition()
     data = http_body.parse_body()
     f1 = data.get("feature1") or data.get("template1")
     f2 = data.get("feature2") or data.get("template2")
@@ -286,6 +324,7 @@ def persons_list():
 
 @route("/persons", ["POST"])
 def persons_enroll():
+    require_recognition()
     body = _body()
     result = gallery.enroll(
         _image(body),
@@ -330,6 +369,7 @@ def person_delete(person_id: int):
 
 @route("/persons/import", ["POST"])
 def persons_import():
+    require_recognition()
     body = _body()
     name_from = str(_param(body, "name_from", "file"))
     if name_from not in ("file", "folder"):
@@ -362,6 +402,7 @@ def face_image(face_id: int):
 
 @route("/identify", ["POST"])
 def identify():
+    require_recognition()
     body = _body()
     return ok(gallery.identify(
         _image(body),
@@ -374,6 +415,7 @@ def identify():
 
 @route("/similar", ["POST"])
 def similar():
+    require_recognition()
     body = _body()
     return ok(gallery.find_similar(
         _number(body, "threshold"),
@@ -448,7 +490,7 @@ def main() -> None:
     license_ux.bootstrap(
         ROOT,
         get_machine_code=sdk.get_machine_code,
-        activate=sdk.activate,
+        activate=activate_checked,
         init_sdk=sdk.init_sdk,
     )
     print(f"Face Recognition API {API_VERSION} on http://{host}:{port}  (docs: /docs)")
